@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const passengerSchema = mongoose.Schema({
+const userSchema = mongoose.Schema({
   accountType: {
     type: String,
     required: [true, "account type is required"],
@@ -16,12 +16,18 @@ const passengerSchema = mongoose.Schema({
   },
   lastName: {
     type: String,
-    required: [true, "last name is required"],
   },
   firstName: {
     type: String,
-    required: [true, "first name is required"],
+  },
+  licenseNumber: {
+    type: String,
+
+    unique: [true, "license number is already taken"],
+  },
+  taxiType: {
+    type: String,
   },
 });
 
-module.exports = mongoose.model("Passengers", passengerSchema);
+module.exports = mongoose.model("Users", userSchema);
