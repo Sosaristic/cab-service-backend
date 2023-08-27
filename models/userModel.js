@@ -1,3 +1,5 @@
+const bycrypt = require("bcrypt");
+
 const mongoose = require("mongoose");
 
 const userSchema = mongoose.Schema({
@@ -30,4 +32,21 @@ const userSchema = mongoose.Schema({
   },
 });
 
-module.exports = mongoose.model("Users", userSchema);
+userSchema.pre("save", async function (next) {
+  const salt = await bycrypt.genSalt();
+  this.password = await bycrypt.hash(this.password, salt);
+  next();
+});
+
+userSchema.statics.login = async function (email, password) {
+  const user = await this.findOne({ email });
+  if (user) {
+    const auth = await bycrypt.compare(password, user.password);
+    if (auth) {
+      return user;
+    }
+    throw new Error("Email or password is not correct");
+  }
+  throw new Error("Account not found");
+};
+module.exports = mongoose.model("User", userSchema);

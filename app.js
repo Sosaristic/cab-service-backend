@@ -1,7 +1,7 @@
 const express = require("express");
 const errorHandler = require("./middleware/errorHandler");
 const dotenv = require("dotenv").config();
-const router = require("express").Router();
+const cookieParser = require("cookie-parser");
 
 const userRoute = require("./routes/userRoute");
 const connectDb = require("./config/dbConnection");
@@ -13,6 +13,7 @@ const app = express();
 const port = process.env.PORT || 5000;
 
 app.use(express.json());
+app.use(cookieParser());
 
 app.use("/api/users", userRoute);
 
