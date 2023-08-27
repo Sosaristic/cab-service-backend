@@ -52,7 +52,14 @@ const loginUser = asyncHandler(async (req, res) => {
 // @access public
 const signUpUser = asyncHandler(async (req, res) => {
   const { email, password, accountType, lastName, firstName, taxiType, licenseNumber } = req.body;
-  if (!email || !password || !lastName || !firstName) {
+  if (
+    accountType === "driver" &&
+    (!email || !password || !lastName || !firstName || !taxiType || !licenseNumber)
+  ) {
+    res.status(400);
+    throw new Error("All fields are required");
+  }
+  if (accountType === "passenger" && (!email || !password || !lastName || !firstName)) {
     res.status(400);
     throw new Error("All fields are required");
   }
