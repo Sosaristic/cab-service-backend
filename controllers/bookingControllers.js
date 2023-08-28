@@ -4,14 +4,16 @@ const { json } = require("express");
 
 const getCab = asyncHandler(async (req, res) => {
   const bookingDetails = {
-    passenger: "64ec024e918e981091080508",
-    driver: "64ec026b918e98109108050b",
+    passenger: "64ec51dfad63211a458087b7",
+    driver: "64ec5191ad63211a458087ae",
     passengerLocation: { longitude: "79.5", latitude: "56.9" },
     passengerDestination: { longitude: "79.5", latitude: "56.9" },
     amount: 5000,
     travelDate: new Date(),
     bookingStatus: "pending",
     journeyStatus: "started",
+    review: "journey was peaceful",
+    rating: 6,
   };
   const bookingData = req.body;
   const book = await Booking.create(bookingDetails);

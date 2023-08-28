@@ -15,18 +15,18 @@ const authUsers = (req, res, next) => {
       if (err.name === "TokenExpiredError" && refreshToken) {
         jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, async (err, decoded) => {
           if (err) {
-            res.status(400);
+            res.status(401);
             throw new Error("invalid token");
           }
           const storedToken = await Token.findOne({ token: refreshToken });
           if (!storedToken) {
-            res.status(400);
+            res.status(401);
             throw new Error("invalid token");
           }
 
           const refreshedUser = await User.findById(decoded.userId);
           if (!refreshedUser) {
-            res.status(401);
+            res.status(400);
             throw new Error("User not found");
           }
 
@@ -41,7 +41,7 @@ const authUsers = (req, res, next) => {
       }
     } else {
       try {
-        const user = await User.findById(decoded.userId);
+        const user = await User.findById(decoded.userId).select("-password").exec();
         req.user = user;
       } catch (error) {}
 
