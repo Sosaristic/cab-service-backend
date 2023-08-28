@@ -71,20 +71,33 @@ const signUpUser = asyncHandler(async (req, res) => {
     throw new Error("User already exists");
   }
 
-  const user = await User.create({
+  const passengerDetails = {
     email,
     password,
     accountType,
     lastName,
     firstName,
-    taxiType: accountType == "driver" ? taxiType : null,
-    licenseNumber: accountType == "driver" ? licenseNumber : null,
-  });
+  };
+  const driverDetails = {
+    email,
+    password,
+    accountType,
+    lastName,
+    firstName,
+    taxiType,
+    licenseNumber,
+    isAvailable: false,
+    rating: 0,
+  };
+
+  const userDetails = accountType === "driver" ? driverDetails : passengerDetails;
+
+  const user = await User.create(userDetails);
   if (user) {
     res.status(201).json({ _id: user.id, email: user.email, message: "registration successful" });
   } else {
     res.status(400);
-    throw new Error("driver data is not valid");
+    throw new Error("error trying to register user");
   }
 });
 

@@ -2,35 +2,50 @@ const bycrypt = require("bcrypt");
 
 const mongoose = require("mongoose");
 
-const userSchema = mongoose.Schema({
-  accountType: {
-    type: String,
-    required: [true, "account type is required"],
-  },
-  email: {
-    type: String,
-    required: [true, "email is required"],
-    unique: [true, "email already taken"],
-  },
-  password: {
-    type: String,
-    required: [true, "password is required"],
-  },
-  lastName: {
-    type: String,
-  },
-  firstName: {
-    type: String,
-  },
-  licenseNumber: {
-    type: String,
+const userSchema = mongoose.Schema(
+  {
+    accountType: {
+      type: String,
+      required: [true, "account type is required"],
+    },
+    email: {
+      type: String,
+      required: [true, "email is required"],
+      unique: [true, "email already taken"],
+      trim: true,
+      lowercase: true,
+    },
+    password: {
+      type: String,
+      required: [true, "password is required"],
+      trim: true,
+    },
+    lastName: {
+      type: String,
+      required: true,
+      trim: true,
+      lowercase: true,
+    },
+    firstName: {
+      type: String,
+      required: true,
+      trim: true,
+      lowercase: true,
+    },
+    licenseNumber: {
+      type: String,
+      trim: true,
 
-    unique: [true, "license number is already taken"],
+      unique: [true, "license number is already taken"],
+    },
+    taxiType: {
+      type: String,
+    },
+    isAvailable: Boolean,
+    rating: { type: Number, min: 0, max: 10 },
   },
-  taxiType: {
-    type: String,
-  },
-});
+  { timestamps: true }
+);
 
 userSchema.pre("save", async function (next) {
   const salt = await bycrypt.genSalt();

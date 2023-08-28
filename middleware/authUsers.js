@@ -4,8 +4,8 @@ const User = require("../models/userModel");
 const jwt = require("jsonwebtoken");
 
 const authUsers = (req, res, next) => {
-  const accessToken = req.cookies.accessToken;
-  const refreshToken = req.cookies.refreshToken;
+  const accessToken = req.cookies?.accessToken;
+  const refreshToken = req.cookies?.refreshToken;
   if (!accessToken || !refreshToken) {
     res.status(401);
     throw new Error("access token missing");
@@ -15,13 +15,13 @@ const authUsers = (req, res, next) => {
       if (err.name === "TokenExpiredError" && refreshToken) {
         jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, async (err, decoded) => {
           if (err) {
-            res.status(403);
-            throw new Error("invalid refresh token");
+            res.status(400);
+            throw new Error("invalid token");
           }
           const storedToken = await Token.findOne({ token: refreshToken });
           if (!storedToken) {
-            res.status(403);
-            throw new Error("invalid refresh token");
+            res.status(400);
+            throw new Error("invalid token");
           }
 
           const refreshedUser = await User.findById(decoded.userId);

@@ -5,7 +5,9 @@ const cookieParser = require("cookie-parser");
 const cors = require("cors");
 
 const userRoute = require("./routes/userRoute");
+const bookingRoute = require("./routes/bookingRoute");
 const connectDb = require("./config/dbConnection");
+const authUsers = require("./middleware/authUsers");
 
 connectDb();
 
@@ -23,6 +25,7 @@ app.use(cookieParser());
 app.use(cors(corsOption));
 
 app.use("/api/users", userRoute);
+app.use("/api/booking", authUsers, bookingRoute);
 
 app.all("*", (req, res) => {
   res.status(404);
