@@ -51,53 +51,64 @@ const loginUser = asyncHandler(async (req, res) => {
 // @route POST /api/user
 // @access public
 const signUpUser = asyncHandler(async (req, res) => {
+  async function addDetailsToDatabase(details) {
+    const user = await User.create(details);
+    if (user) {
+      res.status(201).json({ _id: user.id, email: user.email, message: "registration successful" });
+    } else {
+      res.status(400);
+      throw new Error("could not register user");
+    }
+  }
   const { email, password, accountType, lastName, firstName, taxiType, licenseNumber } = req.body;
-  if (
-    accountType === "driver" &&
-    (!email || !password || !lastName || !firstName || !taxiType || !licenseNumber)
-  ) {
-    res.status(400);
-    throw new Error("All fields are required");
-  }
-  if (accountType === "passenger" && (!email || !password || !lastName || !firstName)) {
-    res.status(400);
-    throw new Error("All fields are required");
-  }
-
-  const isUserAvailable = await User.findOne({ email });
-
-  if (isUserAvailable) {
-    res.status(400);
-    throw new Error("User already exists");
-  }
-
-  const passengerDetails = {
-    email,
-    password,
-    accountType,
-    lastName,
-    firstName,
-  };
-  const driverDetails = {
-    email,
-    password,
-    accountType,
-    lastName,
-    firstName,
-    taxiType,
-    licenseNumber,
-    isAvailable: false,
-    rating: 0,
-  };
-
-  const userDetails = accountType === "driver" ? driverDetails : passengerDetails;
-
-  const user = await User.create(userDetails);
-  if (user) {
-    res.status(201).json({ _id: user.id, email: user.email, message: "registration successful" });
+  if (accountType === "driver") {
+    if (!email || !password || !lastName || !firstName || !licenseNumber) {
+      res.status(400);
+      throw new Error("All fields are required");
+    }
+    const isUserAvailable = await User.findOne({ email });
+    if (isUserAvailable) {
+      res.status(400);
+      throw new Error("User already exists");
+    }
+    const islicenseNumber = await User.findOne({ licenseNumber });
+    if (islicenseNumber) {
+      res.status(400);
+      throw new Error("license number already exists");
+    }
+    const driverDetails = {
+      email,
+      password,
+      accountType,
+      lastName,
+      firstName,
+      taxiType,
+      licenseNumber,
+      isAvailable: false,
+      rating: 0,
+    };
+    addDetailsToDatabase(driverDetails);
+  } else if (accountType === "passenger") {
+    if (!email || !password || !lastName || !firstName) {
+      res.status(400);
+      throw new Error("All fields are required");
+    }
+    const isUserAvailable = await User.findOne({ email });
+    if (isUserAvailable) {
+      res.status(400);
+      throw new Error("User already exists");
+    }
+    const passengerDetails = {
+      email,
+      password,
+      accountType,
+      lastName,
+      firstName,
+    };
+    addDetailsToDatabase(passengerDetails);
   } else {
     res.status(400);
-    throw new Error("error trying to register user");
+    throw new Error("invalid account type");
   }
 });
 
