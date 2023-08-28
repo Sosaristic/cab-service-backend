@@ -2,6 +2,9 @@ const asyncHandler = require("express-async-handler");
 const { Booking } = require("../models/bookingModel");
 const { json } = require("express");
 
+// @ book a cab
+// @ route POST /api/booking
+
 const getCab = asyncHandler(async (req, res) => {
   const bookingDetails = {
     passenger: "64ec51dfad63211a458087b7",
@@ -25,6 +28,10 @@ const getCab = asyncHandler(async (req, res) => {
   res.status(201).json(book);
 });
 
+// @ get single booking
+// @ route GET /api/booking/:bookingID
+// @access private
+
 const singleBooking = asyncHandler(async (req, res) => {
   const id = req.params.id;
   const isBookingAvailable = await Booking.findOne({ _id: id });
@@ -42,4 +49,30 @@ const singleBooking = asyncHandler(async (req, res) => {
   res.status(200).json(booking);
 });
 
-module.exports = { getCab, singleBooking };
+// @ update booking details
+// @ route PATCH /api/booking/:bookingID
+// @ access private
+
+const updateBooking = asyncHandler(async (req, res) => {
+  const bookingID = req.params.bookingID;
+  const newData = req.body;
+  if (bookingID.length !== 24) {
+    res.status(400);
+    throw new Error("invalid booking id");
+  }
+  const isBookingAvailable = await Booking.findOne({ _id: bookingID });
+  if (!isBookingAvailable) {
+    res.status(400);
+    throw new Error("booking not foud");
+  }
+  const filter = { _id: bookingID };
+  const updatedBooking = await Booking.findOneAndUpdate(filter, newData, { new: true });
+  if (updatedBooking) {
+    res.status(200).json(updatedBooking);
+  } else {
+    res.status(400);
+    throw new Error("Could not update data");
+  }
+});
+
+module.exports = { getCab, singleBooking, updateBooking };
