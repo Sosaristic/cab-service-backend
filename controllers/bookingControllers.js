@@ -1,11 +1,20 @@
 const asyncHandler = require("express-async-handler");
 const { Booking } = require("../models/bookingModel");
-const { json } = require("express");
-
+const { v4: uuidv4 } = require("uuid");
 // @ book a cab
 // @ route POST /api/booking
 
 const getCab = asyncHandler(async (req, res) => {
+  const isBookingAvailable = await Booking.findOne({
+    bookingId: "b9227767-b822-437e-9c4a-aec12a297a7b",
+  });
+  if (isBookingAvailable) {
+    res.status(400);
+    throw new Error("booking is already made");
+  }
+
+  const id = uuidv4();
+  console.log(id);
   const bookingDetails = {
     passenger: "64ec51dfad63211a458087b7",
     driver: "64ec5191ad63211a458087ae",
@@ -15,8 +24,9 @@ const getCab = asyncHandler(async (req, res) => {
     travelDate: new Date(),
     bookingStatus: "pending",
     journeyStatus: "started",
-    review: "journey was peaceful",
+    review: "",
     rating: 6,
+    bookingId: id,
   };
   const bookingData = req.body;
   const book = await Booking.create(bookingDetails);

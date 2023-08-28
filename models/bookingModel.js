@@ -13,10 +13,11 @@ const bookingSchema = mongoose.Schema({
   },
   amount: Number,
   travelDate: { type: Date },
-  bookingStatus: { type: String, enum: ["pending", "accepted", "decline"] },
-  journeyStatus: { type: String, enum: ["not started", "started", "ended"] },
-  review: { type: String, required: [true, "review is required"] },
+  bookingStatus: { type: String, enum: ["pending", "accepted", "declined"] },
+  journeyStatus: { type: String, enum: ["pending", "started", "ended"] },
+  review: { type: String },
   rating: { type: Number, required: [true, "rating is required"], min: 0, max: 10 },
+  bookingId: { type: String, unique: true, required: [true, "booking it is required"] },
 });
 
 const Booking = mongoose.model("Booking", bookingSchema);
