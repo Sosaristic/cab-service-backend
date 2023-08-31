@@ -15,8 +15,9 @@ const app = express();
 
 const port = process.env.PORT || 5000;
 
+
 const corsOption = {
-  origin: ["http://localhost:5001", "https://swiftrides.vercel.app/"],
+  origin: ["http://localhost:5001", "https://swiftrides.vercel.app/", "http://localhost:3000"],
   credentials: true,
 };
 
